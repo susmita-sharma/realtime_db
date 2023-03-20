@@ -1,33 +1,36 @@
+
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
-import 'addnote.dart';
-import 'home.dart';
-import 'getUser.dart';
+import 'secondPageObjNavigation.dart';
+import 'firstPageObjNavigation.dart';
 
-
-void main() async {
+void main  ()  async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+
+
+  runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
+late final Person personObj;
 
-class _MyAppState extends State<MyApp> {
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Nepal Telecom",
-      theme: ThemeData(
-        primaryColor: Colors.greenAccent[700],
-      ),
-      home: Text("hi"),
+
+      initialRoute: 'firstPageObjNavigation',
+      routes: {
+        'firstPageObjNavigation': (context) => const FirstPageObj(),
+        'secondPage': (context) => SecondPage( person: personObj),
+      },
       debugShowCheckedModeBanner: false,
+      title: 'Nepal Telecom',
     );
+
   }
 }
+
