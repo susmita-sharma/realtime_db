@@ -20,7 +20,7 @@ class _addnoteState extends State<addnote> {
   @override
   Widget build(BuildContext context) {
     var rng = Random();
-    var k = rng.nextInt(10000);
+    var k = rng.nextInt(10000); // for the unique identification of the data
 
     final ref = fb.ref().child('todos/$k');
 

@@ -40,6 +40,7 @@ class _FirstPageObj extends State<FirstPageObj> {
       setState(() {
         _allUsers = Persons;
         _foundUsers = Persons;
+
       });
     });
     super.initState();
@@ -121,11 +122,14 @@ class _FirstPageObj extends State<FirstPageObj> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => SecondPage(
-                              person: Person(
-                                name: _foundUsers[index].name,
-                                designation: _foundUsers[index].designation,
-                                id: _foundUsers[index].id,                                           phone : _foundUsers[index].phone,
-                              ),
+                              person: _foundUsers[index]
+                              //
+                              // Person(
+                              //   name: _foundUsers[index].name,
+                              //   designation: _foundUsers[index].designation,
+                              //   id: _foundUsers[index].id,
+                              //   phone : _foundUsers[index].phone,
+                              // ),
                             ),
                           ),
                         );
@@ -152,16 +156,6 @@ class _FirstPageObj extends State<FirstPageObj> {
 //   bool? res = await FlutterPhoneDirectCaller.callNumber(number);
 // }
 
-// Future<List<Person>> loadJsonData() async {
-//   final jsonString = await rootBundle.loadString("assets/data.json");
-//   List<dynamic> jsonList = json.decode(jsonString);
-//   List<Person> personList = jsonList
-//       .map((jsonsData) => Person(
-//       name: jsonsData["name"], designation: jsonsData["designation"], id: jsonsData["id"], phone: jsonsData["phone"]))
-//       .toList();
-//   print(personList);
-//   return personList;
-// }
 
 class GetUserData {
   final DatabaseReference ref = FirebaseDatabase.instance.ref("emp");
@@ -172,9 +166,12 @@ class GetUserData {
     //print(event.snapshot.value); // '{ name: John ...... }'
 
     String jsonString = json.encode(event.snapshot.value);
+    print("@@@ PRINTING JSON STRING EVENT.SNAPSHOT.VALUE");
     print(jsonString); // { "name" : "John" ....}
 // to get the List to convert into
     List<dynamic> jsonList = json.decode(jsonString);
+    print("@@@  PRINTING JSON LIST AFTER JSON.DECODE(JSONSTRING)");
+    print(jsonList);
     List<Person> personList = jsonList.map((jsonsData) =>
         Person(
             name: jsonsData["name"],
@@ -182,6 +179,9 @@ class GetUserData {
             id: jsonsData["id"],
             phone: jsonsData["phone"]))
         .toList();
+    print("@@@ Printing List of Person");
+
+    print(personList);
     return personList;
   }
 }
