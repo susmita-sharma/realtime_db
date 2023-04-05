@@ -1,5 +1,3 @@
-
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
@@ -26,29 +24,15 @@ class _HomeState extends State<Home> {
 
 
 
-    final ref = fb.ref().child('todos');
+    final ref = fb.ref().child('emp');
     //final databaseRef = FirebaseDatabase.instance.reference().child('todos');
     /*List<Map<dynamic, dynamic>> searchResults = [];
     final searchFilter = TextEditingController();*/
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.indigo[900],
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => addnote(),
-            ),
-          );
-        },
-        child: Icon(
-          Icons.add,
-        ),
-      ),
       appBar: AppBar(
         title: Text(
-          'Employee Details',
+          'Add Employee',
           style: TextStyle(
             fontSize: 30,
           ),
@@ -69,7 +53,7 @@ class _HomeState extends State<Home> {
                 //(v);// {subtitle: webfun, title: subscribe}
 
                 g = v.replaceAll(
-                    RegExp("{|}|name: |designation: |id: |phone "), "");
+                    RegExp("{|}|name: |designation: |id: |phone: "), "");
                 //   print(g);// webfun, subscribe
                 g.trim();
 
@@ -212,7 +196,7 @@ class _HomeState extends State<Home> {
       "id" : id.text,
       "name" : name.text,
       "designation" : designation.text,
-      "phone" : phone,
+      "phone" : phone.text,
     });
     id.clear();
     name.clear();

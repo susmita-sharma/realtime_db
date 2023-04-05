@@ -1,10 +1,14 @@
-import 'dart:math';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'main.dart';
-import 'home.dart';
+import 'package:realtime_db/main.dart';
+
+import '../firstPageObjNavigation.dart';
 
 class addnote extends StatefulWidget {
+
+  final String data;
+  addnote({required this.data});
+
   @override
   _addnoteState createState() => _addnoteState();
 }
@@ -19,14 +23,15 @@ class _addnoteState extends State<addnote> {
   final fb = FirebaseDatabase.instance;
   @override
   Widget build(BuildContext context) {
-    var rng = Random();
-    var k = rng.nextInt(10000); // for the unique identification of the data
+    //var k = totalCount;
+    //var rng = Random();
+   // var k = rng.nextInt(10000); // for the unique identification of the data
 
-    final ref = fb.ref().child('todos/$k');
+    final ref = fb.ref().child('emp');
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Employees"),
+        title: Text("Edit Employees Details"),
         backgroundColor: Colors.indigo[900],
       ),
       body: Container(
@@ -87,17 +92,19 @@ class _addnoteState extends State<addnote> {
             MaterialButton(
               color: Colors.indigo[900],
               onPressed: () {
-                ref.set({
+                print("@@@ WIDGET.DATA FOR index THE SELECTION OF ITEM IN DB");
+                print(widget.data);
+                ref.child(widget.data).update({
                   "id" : id.text,
                   "name" : name.text,
                   "designation" : designation.text,
-                  "phone" : phone,
+                  "phone" : phone.text,
                 }).asStream();
                 Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (_) => Home()));
+                    context, MaterialPageRoute(builder: (_) => FirstPageObj()));
               },
               child: Text(
-                "save",
+                "UPDATE",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
