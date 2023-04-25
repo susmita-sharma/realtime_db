@@ -2,23 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
-import 'package:realtime_db/main.dart';
+import 'package:realtime_db/emp_detail.dart';
 import 'emp_form.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
-import 'Misc. Code Base/stream.dart';
-
 
 class Person {
   final String name;
   final String designation;
   final String id;
   final String phone;
-
   Person({required this.name, required this.designation, required this.id, required this.phone});
-
 }
-
 class FirstPageObj extends StatefulWidget {
   const FirstPageObj({Key? key}) : super(key: key);
   @override
@@ -29,6 +23,7 @@ class _FirstPageObj extends State<FirstPageObj> {
   var _allUsers = <String, Person>{};
   var _foundUsers = <String, Person>{};
   Iterable<MapEntry<String, Person>> results = {};
+
   @override
   void initState() {
     getUsers().then((mapP) {
@@ -39,7 +34,6 @@ class _FirstPageObj extends State<FirstPageObj> {
     });
     super.initState();
   }
-
   // This function is called whenever the text field changes
   void _runFilter(dynamic enteredKeyword) {
     //  int? userInt = int.tryParse(enteredKeyword);
@@ -58,12 +52,6 @@ class _FirstPageObj extends State<FirstPageObj> {
       results = _allUsers.entries
           .where((entry) =>
           entry.value.name.toLowerCase().contains(enteredKeyword.toLowerCase())).fold({}, (map, entry) => map..[entry.key] = entry.value);
-    }
-
-    // Iterate over the values using a for-in loop
-    for (Person person in results.values) {
-      print(
-          "Name: ${person.name}, Designation: ${person.designation}, ID: ${person.id}, Phone: ${person.phone}");
     }
     setState(() {
       getUsers().then((mapP) {_allUsers = mapP;});
@@ -110,22 +98,21 @@ class _FirstPageObj extends State<FirstPageObj> {
               child: FirebaseAnimatedList(
                 query: ref,
                 shrinkWrap: true,
-                //itemCount: _foundUsers.length,
-                itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
-                  final entry = _foundUsers.entries.elementAt(index);
-                  final key = entry.key;
-                  final value = entry.value;
-                  return GestureDetector(
-                    onTap: (){
-                     // Navigator.push(context, MaterialPageRoute(builder: (context)=> SecondPage()));
-                    },
-                    child: Card(
+                itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index){
+                  if (index >= 0 && index < _foundUsers.entries.length) {
+                    final entry = _foundUsers.entries.elementAt(index);
+                    final key = entry.key;
+                    final value = entry.value;
+                    return GestureDetector(
+                      child: Card(
                         color: Colors.amberAccent,
                         elevation: 4,
                         margin: const EdgeInsets.symmetric(vertical: 10),
                         child: ListTile(
-                          leading: Text(value.id,style: TextStyle(fontWeight: FontWeight.bold),),
-                          title: Text(value.name,style: TextStyle(fontWeight: FontWeight.bold),),
+                          leading: Text(value.id,
+                            style: TextStyle(fontWeight: FontWeight.bold),),
+                          title: Text(value.name,
+                            style: TextStyle(fontWeight: FontWeight.bold),),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -133,55 +120,40 @@ class _FirstPageObj extends State<FirstPageObj> {
                               Text(value.phone)
                             ],
                           ),
-                          trailing: PopupMenuButton<String>(
-                            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                              PopupMenuItem<String>(
-                                value: 'edit',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.edit),
-
-                                    SizedBox(width: 8.0),
-                                    Text('Edit'),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.delete),
-                                    SizedBox(width: 8.0),
-                                    Text('Delete'),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'share',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.share),
-                                    SizedBox(width: 8.0),
-                                    Text('Share'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            onSelected: (String value) {
-                              // Handle menu item selection
+                          /*trailing: IconButton(
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) => UpdateDataAdd()));
+                              setStateMeth();
                             },
-                            icon: Icon(Icons.more_vert),
-                          )
-                          ,
+                            icon: Icon(Icons.edit),
+                          ),*/
                           /*trailing: IconButton(
                             onPressed: (){
                               ref.child(snapshot.key!).remove();
                               setStateMeth();
                             }, icon: Icon(Icons.delete),
                           ),*/
+                         /* trailing: IconButton(
+                            onPressed: (){
+                              DeleteData(snapshot);
+                            },icon: Icon(Icons.delete),
+                          ),*/
+                          onTap: () {
+                            Person person = Person(name: value.name,
+                                designation: value.designation,
+                                id: value.id,
+                                phone: value.phone);
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) =>
+                                    SecondPage(person: person)));
+                          },
                         ),
-                    ),
-                  );
+                      ),
+                    );
+                  }else{
+                    return Container();
+                  }
                 },
               ),
             ),
@@ -190,7 +162,13 @@ class _FirstPageObj extends State<FirstPageObj> {
       ),
     );
   }
+  void DeleteData(DataSnapshot snapshot) {
+    _FirstPageObj().ref.child(snapshot.key!).remove();
+    _FirstPageObj().setStateMeth();
+  }
 }
+
+
 
 Future<Map<String, Person>> getUsers() async {
   final DatabaseReference ref = FirebaseDatabase.instance.ref("emp");
@@ -210,6 +188,7 @@ Future<Map<String, Person>> getUsers() async {
         phone: match.group(1)!,
       );
     }
+
   });
   print('@@@COMPLETER');
   return personMap;
