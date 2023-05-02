@@ -1,12 +1,10 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
-import 'package:realtime_db/main.dart';
+import 'emp_detail.dart';
 import 'emp_form.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
-import 'Misc. Code Base/stream.dart';
+import 'Methods/getUser.dart' as G;
 
 
 class Person {
@@ -31,7 +29,7 @@ class _FirstPageObj extends State<FirstPageObj> {
   Iterable<MapEntry<String, Person>> results = {};
   @override
   void initState() {
-    getUsers().then((mapP) {
+    G.getUsers().then((mapP) {
       setState(() {
         _allUsers = mapP;
         _foundUsers = mapP;
@@ -44,8 +42,7 @@ class _FirstPageObj extends State<FirstPageObj> {
   void _runFilter(dynamic enteredKeyword) {
     //  int? userInt = int.tryParse(enteredKeyword);
     var results = <String, Person>{};
-    print("@@@ RUNFLINTER WITH ENTERED KEYWORD");
-    print(enteredKeyword);
+    print(" RUNFLINTER WITH ENTERED KEYWORD $enteredKeyword ");
     if (enteredKeyword.isEmpty) {
       results = _allUsers;
     } else if (int.tryParse(enteredKeyword) != null){
@@ -66,15 +63,14 @@ class _FirstPageObj extends State<FirstPageObj> {
           "Name: ${person.name}, Designation: ${person.designation}, ID: ${person.id}, Phone: ${person.phone}");
     }
     setState(() {
-      getUsers().then((mapP) {_allUsers = mapP;});
+      G.getUsers().then((mapP) {_allUsers = mapP;});
       _foundUsers = results;
-      print("@@@ SETSTATE _FOUNTUSERS");
-      print(_foundUsers);
+      print("@@@ SETSTATE _FOUNTUSERS $_foundUsers");
     });
   }
 
   void setStateMeth() {
-    getUsers().then((mapP) {
+    G.getUsers().then((mapP) {
       setState(() {
         _allUsers = mapP;
         _foundUsers = mapP;
@@ -117,7 +113,7 @@ class _FirstPageObj extends State<FirstPageObj> {
                   final value = entry.value;
                   return GestureDetector(
                     onTap: (){
-                     // Navigator.push(context, MaterialPageRoute(builder: (context)=> SecondPage()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> SecondPage(entry)));
                     },
                     child: Card(
                         color: Colors.amberAccent,
@@ -133,46 +129,7 @@ class _FirstPageObj extends State<FirstPageObj> {
                               Text(value.phone)
                             ],
                           ),
-                          trailing: PopupMenuButton<String>(
-                            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                              PopupMenuItem<String>(
-                                value: 'edit',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.edit),
-
-                                    SizedBox(width: 8.0),
-                                    Text('Edit'),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.delete),
-                                    SizedBox(width: 8.0),
-                                    Text('Delete'),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'share',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.share),
-                                    SizedBox(width: 8.0),
-                                    Text('Share'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            onSelected: (String value) {
-                              // Handle menu item selection
-                            },
-                            icon: Icon(Icons.more_vert),
-                          )
-                          ,
+                         // trailing:,
                           /*trailing: IconButton(
                             onPressed: (){
                               ref.child(snapshot.key!).remove();
@@ -192,26 +149,4 @@ class _FirstPageObj extends State<FirstPageObj> {
   }
 }
 
-Future<Map<String, Person>> getUsers() async {
-  final DatabaseReference ref = FirebaseDatabase.instance.ref("emp");
-  var personMap = <String, Person>{};
-  ref.onValue.listen((event) {
-    String jsonString = json.encode(event.snapshot.value);
-    print("@@@@JSONSTRING");
-    print(jsonString);
-    RegExp regex = RegExp(
-        r'\{"phone":"(\d+)","name":"([^"]+)","designation":"([^"]+)","id":"(\d+)"\}'
-    );
-    for (RegExpMatch match in regex.allMatches(jsonString)) {
-      personMap[match.group(4)!] = Person(
-        name: match.group(2)!,
-        designation: match.group(3)!,
-        id: match.group(4)!,
-        phone: match.group(1)!,
-      );
-    }
-  });
-  print('@@@COMPLETER');
-  return personMap;
-}
 

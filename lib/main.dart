@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       routes: {
         'first': (context) => const FirstPageObj(),
 
-        'secondPage': (context) => SecondPage( person: personObj),
+      //  'secondPage': (context) => SecondPage( person: personObj),
       },
       debugShowCheckedModeBanner: false,
       title: 'Nepal Telecom',

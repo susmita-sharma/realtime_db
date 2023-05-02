@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'all_emp_list.dart';
 
 class SecondPage extends StatelessWidget {
-  final Person person;
+  final MapEntry<String, Person> entry;
 
-  const SecondPage({required this.person});
+  const SecondPage(this.entry );
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class SecondPage extends StatelessWidget {
           width: 500,
           height: 500,
           child:Text(
-            "Name: ${person.name}\nAge: ${person.designation} \nEmployeeID : ${person.id}  \nPhone : ${person.phone} ", style: TextStyle(color: Colors.red, backgroundColor: Colors.blue, fontWeight: FontWeight.bold), ),
+            "Name: ${entry.value.name}\nAge: ${entry.value.designation} \nEmployeeID : ${entry.value.id}  \nPhone : ${entry.value.phone} ", style: TextStyle(color: Colors.red, backgroundColor: Colors.blue, fontWeight: FontWeight.bold), ),
         ),
       ),
     );
